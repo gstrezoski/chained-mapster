@@ -147,7 +147,7 @@ resource web 'Microsoft.Web/sites@2022-03-01' = {
 }
 
 resource webdiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: AllLogs
+  name: 'AllLogs'
   scope: web
   properties: {
     workspaceId: logAnalyticsWorkspace.id
@@ -155,35 +155,35 @@ resource webdiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-previe
       {
         category: 'AppServiceHTTPLogs'
         enabled: true
-      },
+      }
       {
         category: 'AppServiceConsoleLogs'
         enabled: true
-      },
+      }
       {
         category: 'AppServiceAppLogs'
         enabled: true
-      },
+      }
       {
         category: 'AppServiceAuditLogs'
         enabled: true
-      },
+      }
       {
         category: 'AppServiceAntivirusScanAuditLogs'
         enabled: true
-      },
+      }
       {
         category: 'AppServiceFileAuditLogs'
         enabled: true
-      },
+      }
       {
         category: 'AppServiceEnvironmentPlatformLogs'
         enabled: true
-      },
+      }
       {
         category: 'AppServiceIPSecAuditLogs'
         enabled: true
-      },
+      }
       {
         category: 'AppServicePlatformLogs'
         enabled: true
