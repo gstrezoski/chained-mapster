@@ -169,18 +169,6 @@ resource webdiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-previe
         enabled: true
       }
       {
-        category: 'AppServiceAntivirusScanAuditLogs'
-        enabled: true
-      }
-      {
-        category: 'AppServiceFileAuditLogs'
-        enabled: true
-      }
-      {
-        category: 'AppServiceEnvironmentPlatformLogs'
-        enabled: true
-      }
-      {
         category: 'AppServiceIPSecAuditLogs'
         enabled: true
       }
