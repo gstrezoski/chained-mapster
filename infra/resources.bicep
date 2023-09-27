@@ -100,7 +100,7 @@ resource web 'Microsoft.Web/sites@2022-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  
+
   resource appSettings 'config' = {
     name: 'appsettings'
     properties: {
@@ -142,7 +142,7 @@ resource web 'Microsoft.Web/sites@2022-03-01' = {
     }
   }
 
-  dependsOn: [virtualNetwork]
+  dependsOn: [ virtualNetwork ]
 
 }
 
@@ -223,7 +223,6 @@ module applicationInsightsResources 'appinsights.bicep' = {
   }
 }
 
-
 resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-preview' = {
   location: location
   tags: tags
@@ -263,7 +262,6 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-pr
   ]
 }
 
-
 resource djangoDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2022-01-20-preview' = {
   parent: postgresServer
   name: 'django'
@@ -271,3 +269,11 @@ resource djangoDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@202
 
 output WEB_URI string = 'https://${web.properties.defaultHostName}'
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
+
+resource webAppSettings 'Microsoft.Web/sites/config@2022-03-01' existing = {
+  name: web::appSettings.name
+  parent: web
+}
+
+var webAppSettingsKeys = map(items(webAppSettings.list().properties), setting => setting.key)
+output WEB_APP_SETTINGS array = webAppSettingsKeys
