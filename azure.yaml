@@ -8,3 +8,15 @@ services:
     project: .
     language: py
     host: appservice
+hooks:
+  postprovision:
+    posix: 
+      shell: sh
+      run: echo "\n\nHere are the app settings keys:\n" && echo "$WEB_APP_SETTINGS" | jq -r '.[]'
+      interactive: true
+      continueOnError: true
+    windows:
+      shell: pwsh
+      run: Write-Host "`n`nHere are the app settings keys:`n" $WEB_APP_SETTINGS | ConvertFrom-Json | ForEach-Object { Write-Host $_ }
+      interactive: true
+      continueOnError: true
