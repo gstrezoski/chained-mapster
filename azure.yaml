@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: django-postgresql-sample-app
+name: app-service-python-postgresql-infra
 metadata:
-  template: django-postgresql-sample-app@0.0.1-beta
+  template: app-service-python-postgresql-infra@0.0.1-beta
 services:
   web:
     project: .
@@ -12,7 +12,7 @@ hooks:
   postprovision:
     posix: 
       shell: sh
-      run: echo "\n\nHere are the app settings keys:\n" && echo "$WEB_APP_SETTINGS" | jq -r '.[]'
+      run: echo $'\n\nHere are the app settings keys:\n' && echo "$WEB_APP_SETTINGS" | jq -r '.[]'
       interactive: true
       continueOnError: true
     windows:

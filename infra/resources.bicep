@@ -104,10 +104,10 @@ resource web 'Microsoft.Web/sites@2022-03-01' = {
   resource appSettings 'config' = {
     name: 'appsettings'
     properties: {
-      AZURE_POSTGRESQL_CONNECTIONSTRING: 'dbname=${djangoDatabase.name} host=${postgresServer.name}.postgres.database.azure.com port=5432 sslmode=require user=${postgresServer.properties.administratorLogin} password=${databasePassword}'
-      APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
       SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
+      AZURE_POSTGRESQL_CONNECTIONSTRING: 'dbname=${pythonAppDatabase.name} host=${postgresServer.name}.postgres.database.azure.com port=5432 sslmode=require user=${postgresServer.properties.administratorLogin} password=${databasePassword}'
       SECRET_KEY: secretKey
+      FLASK_DEBUG: 'False'
     }
   }
 
@@ -233,7 +233,7 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-pr
   }
   properties: {
     version: '12'
-    administratorLogin: 'django'
+    administratorLogin: 'postgresadmin'
     administratorLoginPassword: databasePassword
     storage: {
       storageSizeGB: 128
@@ -262,9 +262,9 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-pr
   ]
 }
 
-resource djangoDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2022-01-20-preview' = {
+resource pythonAppDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2022-01-20-preview' = {
   parent: postgresServer
-  name: 'django'
+  name: 'pythonapp'
 }
 
 output WEB_URI string = 'https://${web.properties.defaultHostName}'
