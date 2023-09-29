@@ -277,3 +277,5 @@ resource webAppSettings 'Microsoft.Web/sites/config@2022-03-01' existing = {
 
 var webAppSettingsKeys = map(items(webAppSettings.list().properties), setting => setting.key)
 output WEB_APP_SETTINGS array = webAppSettingsKeys
+output WEB_APP_LOG_STREAM string = format('https://portal.azure.com/#@/resource{0}/logStream', web.id)
+output WEB_APP_CONFIG string = format('https://portal.azure.com/#@/resource{0}/configuration', web.id)
