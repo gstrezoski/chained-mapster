@@ -23,11 +23,11 @@ hooks:
   postdeploy:
     posix: 
       shell: sh
-      run: echo -e $"\n\nApp Service native logs are enabled for you and streamed at:\033[1;36m $WEB_APP_LOG_STREAM"
+      run: echo -e $"\n\nOpen SSH session to App Service container at:\033[1;36m $WEB_APP_SSH\033[0m" && echo -e $"Stream App Service logs at:\033[1;36m $WEB_APP_LOG_STREAM"
       interactive: true
       continueOnError: true
     windows:
       shell: pwsh
-      run: Write-Host "`n`nApp Service native logs are enabled for you and streamed at:`n" $WEB_APP_LOG_STREAM
+      run: Write-Host "`n`nOpen SSH session to App Service container at:`n" $WEB_APP_SSH; Write-Host "Stream App Service logs at:`n" $WEB_APP_LOG_STREAM
       interactive: true
       continueOnError: true
