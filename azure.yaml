@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
-# azure.yaml is an azd configuration file. 
+# azure.yaml is an azd configuration file and isn't used by the sample application. 
 
-name: python-app-service-postgresql-infra
+name: python-app-service-postgresql-redis-infra
 metadata:
-  template: python-app-service-postgresql-infra@0.0.1-beta
+  template: python-app-service-postgresql-redis-infra@0.0.1-beta
 services:
   web:
     project: .

@@ -5,6 +5,7 @@ This is an infrastructure-only template that doesn't include any application cod
 - A [virtual network](https://learn.microsoft.com/azure/virtual-network/virtual-networks-overview).
 - A VNET-integrated [App Service](https://learn.microsoft.com/azure/app-service/overview) app.
 - An [Azure Database for PostgreSQL flexible server](https://learn.microsoft.com/azure/postgresql/flexible-server/overview), accessible only from within the virtual network.
+- An [Azure Cache for Redis](https://learn.microsoft.com/azure/azure-cache-for-redis/cache-overview), accessible only from within the virtual network.
 - A [Log Analytics workspace](https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-overview) to ship App Service logs.
 
 ## Quick deployment
