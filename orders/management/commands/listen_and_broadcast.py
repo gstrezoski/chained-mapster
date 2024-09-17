@@ -75,8 +75,6 @@ class Command(BaseCommand):
             try:
                 for item in self.pubsub.listen():
                     if item['type'] == 'message':
-                        # Sample item:
-                        # {'type': 'message', 'pattern': None, 'channel': 'orders', 'data': 'XXXXXXXX'}
                         self.on_data_received(item['channel'], item['data'])
             except (redis.exceptions.ConnectionError, redis.exceptions.ResponseError):
                 self.logger.error('Lost connections to redis.')
