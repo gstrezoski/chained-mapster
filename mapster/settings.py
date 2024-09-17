@@ -71,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'mapster.wsgi.application'
+# WSGI_APPLICATION = 'mapster.wsgi.application'
 
 ASGI_APPLICATION = "mapster.asgi.application"
 
