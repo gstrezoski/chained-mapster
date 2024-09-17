@@ -3,6 +3,5 @@
 # For example: ./startup.sh
 
 python manage.py migrate
-gunicorn --workers 2 --threads 4 --timeout 60 --access-logfile \
-    '-' --error-logfile '-' --bind=0.0.0.0:8000 \
-     --chdir=/home/site/wwwroot azureproject.wsgi
+# We have to start it with Daphne as we need the socket connection capability.
+daphne -b 0.0.0.0 -p 8000 mapster.asgi:application

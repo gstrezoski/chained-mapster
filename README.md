@@ -1,14 +1,4 @@
-# AZD Template with a secure App Service and PostgreSQL architecture
-
-This is an infrastructure-only template that doesn't include any application code. You can use it to quickly create the resources you need to deploy a data-driven Python app to Azure (for an example, see [Deploy a Python (Django or Flask) web app with PostgreSQL in Azure](https://learn.microsoft.com/azure/app-service/tutorial-python-postgresql-app)). It provisions the following resources in an Azure resource group:
-
-- A [virtual network](https://learn.microsoft.com/azure/virtual-network/virtual-networks-overview).
-- A VNET-integrated [App Service](https://learn.microsoft.com/azure/app-service/overview) app.
-- An [Azure Database for PostgreSQL flexible server](https://learn.microsoft.com/azure/postgresql/flexible-server/overview), accessible only from within the virtual network.
-- An [Azure Cache for Redis](https://learn.microsoft.com/azure/azure-cache-for-redis/cache-overview), accessible only from within the virtual network.
-- A [Log Analytics workspace](https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-overview) to ship App Service logs.
-
-## Quick deployment
+# Quick deployment
 
 To deploy your data-driven Python app, make sure you have [installed AZD](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd), and run the following commands and sequence and follow the prompts:
 
