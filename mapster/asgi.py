@@ -7,6 +7,7 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 """
 
+import logging
 import os
 
 settings_module = (
@@ -18,6 +19,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)
 import django
 
 django.setup()
+
+log = logging.getLogger("kenny")
+
+log.debug("In the ASGI part of the app!")
 
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application

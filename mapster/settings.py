@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-f-4=unun=y4obpxzw2nvgulknp#$!45^xrczi6&8dl$!b^&gn0"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = (
     [os.environ["WEBSITE_HOSTNAME"]] if "WEBSITE_HOSTNAME" in os.environ else []
@@ -97,13 +97,20 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+REDIS_USER = os.environ.get("REDIS_USER", "redis://localhost:6379/0")
+REDIS_PORT = os.environ.get("REDIS_PORT", 6380)
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "a")
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [
-                REDIS_URL,
+                (
+                    "rediss://:{password}@{hostname}:{port}".format(
+                        password=REDIS_PASSWORD, hostname=REDIS_URL, port=REDIS_PORT
+                    )
+                )
             ],
         },
     },
@@ -180,3 +187,25 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s [%(asctime)s] %(module)s.%(lineno)d: %(message)s"
+        }
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.environ.get("LOG_FILE", "./logs/debug.log"),
+            "formatter": "verbose",
+            "backupCount": 5,
+            "maxBytes": 1024**3,  # 1GB
+        }
+    },
+    "loggers": {"kenny": {"handlers": ["file"], "level": "DEBUG", "propagate": True}},
+}

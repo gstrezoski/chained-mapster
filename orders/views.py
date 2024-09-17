@@ -1,4 +1,5 @@
 import json
+import logging
 
 import requests
 from django.http import JsonResponse
@@ -7,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from orders.models import OrganizationalUnit
 from orders.utils import publish_order
+
+log = logging.getLogger(__name__)
 
 METHODS = ["Completed Order", "Return"]
 
@@ -23,6 +26,9 @@ def homepage(request):
     Returns:
         JsonResponse: A JSON response indicating the service status.
     """
+
+    log.debug("at home...")
+
     return JsonResponse({"status": "ok"})
 
 
@@ -61,12 +67,14 @@ def ingest(request):
     payload = json.loads(request.body)[0]
 
     if "validationCode" in payload.get("data"):
+
         print(payload.get("data").get("validationUrl"))
         requests.get(payload.get("data").get("validationUrl"), allow_redirects=True)
         return JsonResponse({"status": "ok"})
 
     blob_location = json.loads(request.body)[0].get("data").get("url") + "?" + SAS
     file_response = requests.get(blob_location, allow_redirects=True)
+
     try:
         payload = file_response.json()
         organization_unit_id = payload["OriginatingOrganizationUnit"].get("ID")

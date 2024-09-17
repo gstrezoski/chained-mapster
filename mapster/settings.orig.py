@@ -24,10 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-f-4=unun=y4obpxzw2nvgulknp#$!45^xrczi6&8dl$!b^&gn0"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = (
-    [os.environ["WEBSITE_HOSTNAME"]] if "WEBSITE_HOSTNAME" in os.environ else []
+    [os.environ["WEBSITE_HOSTNAME"]]
+    if "WEBSITE_HOSTNAME" in os.environ
+    else ["127.0.0.1"]
 )
 CSRF_TRUSTED_ORIGINS = (
     ["https://" + os.environ["WEBSITE_HOSTNAME"]]
@@ -156,3 +158,24 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s [%(asctime)s] %(module)s.%(lineno)d: %(message)s"
+        }
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.environ.get("LOG_FILE", "./logs/debug.log"),
+            "formatter": "verbose",
+            "backupCount": 1,
+            "maxBytes": 1024**3,  # 1GB
+        }
+    },
+    "loggers": {"kenny": {"handlers": ["file"], "level": "DEBUG", "propagate": True}},
+}
