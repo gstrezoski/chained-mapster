@@ -1,46 +1,50 @@
-import os, redis, time, requests, json
-from django.conf import settings
-from orders.models import OrganizationalUnit
-from azure.storage.filedatalake import DataLakeServiceClient
-from azure.storage.blob import BlobServiceClient
+import json
+import os
+import time
 
-REDIS_CONNECTION_POOL = redis.ConnectionPool.from_url(settings.REDIS_URL, decode_responses=True)
+import redis
+import requests
+from azure.storage.blob import BlobServiceClient
+from azure.storage.filedatalake import DataLakeServiceClient
+from django.conf import settings
+
+from orders.models import OrganizationalUnit
+
+REDIS_CONNECTION_POOL = redis.ConnectionPool.from_url(
+    settings.REDIS_URL, decode_responses=True
+)
 
 EVA_ENDPOINT = "https://api.euw.newblack.test.eva-online.cloud/"
 AGENT = "insights"
 API_KEY = "Token 04E2BB04F6D7EC1A5846E8DEA7428E5421404D00BE3C3A2126C81E478D4348DB"
-LIST_DATA = {
-    "PageConfig" : {
-        "SortDirection": 0,
-        "Limit": 300
-    }
-    }
+LIST_DATA = {"PageConfig": {"SortDirection": 0, "Limit": 300}}
 
 HEADERS = {
-        "Authorization":"Token 04E2BB04F6D7EC1A5846E8DEA7428E5421404D00BE3C3A2126C81E478D4348DB",
-        "EVA-User-Agent":"app"}
+    "Authorization": "Token 04E2BB04F6D7EC1A5846E8DEA7428E5421404D00BE3C3A2126C81E478D4348DB",
+    "EVA-User-Agent": "app",
+}
 
 LIST_OUS_ENDPOINTS = [
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/ase-prod-rituals.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/cus-prod-guc-newblack.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-ajax.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-dyson.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-fenix.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-grandvision-pt.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-gstar.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-kiko.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-rituals.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-scotch-2021.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/gwc-prod-ide.json",
-"https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/gwc-prod-intersport.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/ase-prod-rituals.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/cus-prod-guc-newblack.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-ajax.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-dyson.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-fenix.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-grandvision-pt.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-gstar.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-kiko.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-rituals.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-scotch-2021.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/gwc-prod-ide.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/gwc-prod-intersport.json",
 ]
 
 SAS_TOKEN = "sv=2022-11-02&ss=b&srt=sco&sp=rl&se=2024-11-22T22:07:49Z&st=2023-11-22T14:07:49Z&spr=https&sig=o%2F8MVE7cL5GHN9QJEY4Lb%2F%2FvpbDu56VO1jlMY1JJcF8%3D"
 
 ACCOUNT_URL = "https://nbinsights.blob.core.windows.net/"
 DB_NAME = "EVA"
-FOLDER_PREFIX = '/production/organizationunits/2024/08/27/'
-CONTAINER = 'eva-insights'
+FOLDER_PREFIX = "/production/organizationunits/2024/08/27/"
+CONTAINER = "eva-insights"
 
 REDIS_URL = "redis://localhost:6379/0"
 CHANNEL = "orders"
@@ -50,7 +54,7 @@ def connect(redis_url):
     """
     Establishes a connection to a Redis server using the provided URL.
 
-    If a Redis connection already exists through the REDIS_CONNECTION_POOL, it returns that connection. 
+    If a Redis connection already exists through the REDIS_CONNECTION_POOL, it returns that connection.
     Otherwise, it tries to connect repeatedly until a successful connection is made.
 
     Args:
@@ -98,12 +102,12 @@ def trace(*args):
         None
     """
     colorize = True
-    text = ''
+    text = ""
     if colorize:
-        text += '\x1b[1;33;40m'
-    text += ', '.join([str(arg) for arg in args])
+        text += "\x1b[1;33;40m"
+    text += ", ".join([str(arg) for arg in args])
     if colorize:
-        text += '\x1b[0m'
+        text += "\x1b[0m"
     print(text)
 
 
@@ -119,13 +123,17 @@ def get_organizational_units_summaries():
         Response: The response object from the API request.
     """
     data = json.dumps(LIST_DATA)
- 
-    response = requests.post("{}{}".format(EVA_ENDPOINT, "message/ListOrganizationUnitSummaries"), data=data, headers=HEADERS)
- 
+
+    response = requests.post(
+        "{}{}".format(EVA_ENDPOINT, "message/ListOrganizationUnitSummaries"),
+        data=data,
+        headers=HEADERS,
+    )
+
     json_response = response.json()
 
     nm_pages = json_response["Result"]["NumberOfPages"]
-    nm_ous_pp  = len(json_response["Result"]["Page"])
+    nm_ous_pp = len(json_response["Result"]["Page"])
     page = json_response["Result"]["Page"]
 
     for ix in range(nm_pages):
@@ -133,13 +141,13 @@ def get_organizational_units_summaries():
 
     for ix in range(nm_ous_pp):
         if "Address" in page[ix]:
-                
+
             if "Latitude" in page[ix]["Address"].keys():
-                latitude =  page[ix]["Address"]["Latitude"]
-                longitude =  page[ix]["Address"]["Longitude"]
+                latitude = page[ix]["Address"]["Latitude"]
+                longitude = page[ix]["Address"]["Longitude"]
             elif "Latitude" in page[ix]:
-                latitude =  page[ix]["Latitude"]
-                longitude =  page[ix]["Longitude"]
+                latitude = page[ix]["Latitude"]
+                longitude = page[ix]["Longitude"]
             else:
                 latitude = longitude = None
 
@@ -189,7 +197,9 @@ def read_organization_details():
     Returns:
         None
     """
-    container_client = BlobServiceClient(account_url=ACCOUNT_URL, credential=SAS_TOKEN).get_container_client(CONTAINER)
+    container_client = BlobServiceClient(
+        account_url=ACCOUNT_URL, credential=SAS_TOKEN
+    ).get_container_client(CONTAINER)
 
     for ou_export in LIST_OUS_ENDPOINTS:
         client_name = ou_export.split("/")[-1].split("-")[-1][:-4]
@@ -199,16 +209,16 @@ def read_organization_details():
             blob_client = container_client.get_blob_client(blob.name)
             data = json.loads(blob_client.download_blob().readall())
 
-            blob_contents =  data.get("OrganizationUnits")
+            blob_contents = data.get("OrganizationUnits")
 
             for ou in blob_contents:
 
                 if "Latitude" in ou:
-                    latitude =  ou["Latitude"]
-                    longitude =  ou["Longitude"]
+                    latitude = ou["Latitude"]
+                    longitude = ou["Longitude"]
                 else:
                     latitude = longitude = 0.0
-                
+
                 ou_id = ou.get("ID")
 
                 print("{}: {}".format(client_name, ou_id))
@@ -222,7 +232,9 @@ def read_organization_details():
                                 name=ou.get("Name", "NA"),
                                 client_name=client_name,
                                 address=ou.get("Address", "NA").get("Address1", "NA"),
-                                house_number=ou.get("Address", "NA").get("HouseNumber", "NA"),
+                                house_number=ou.get("Address", "NA").get(
+                                    "HouseNumber", "NA"
+                                ),
                                 city=ou.get("Address", "NA").get("City", "NA"),
                                 post_code=ou.get("Address", "NA").get("ZipCode", "NA"),
                                 country=ou.get("Address", "NA").get("CountryID", "NA"),
@@ -237,7 +249,7 @@ def read_organization_details():
                             )
                     except:
                         print("Exception for: {}".format(blob))
-                    
+
 
 def publish_order(organizational_unit):
     """
@@ -257,5 +269,5 @@ def publish_order(organizational_unit):
     data = organizational_unit.to_coords()
 
     connection.publish(CHANNEL, data)
-    
+
     return 0

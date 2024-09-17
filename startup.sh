@@ -4,4 +4,5 @@
 
 python manage.py migrate
 # We have to start it with Daphne as we need the socket connection capability.
+python manage.py collectstatic
 daphne -b 0.0.0.0 -p 8000 mapster.asgi:application

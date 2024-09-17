@@ -8,27 +8,118 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='OrganizationalUnit',
+            name="OrganizationalUnit",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('gl_id', models.CharField(blank=True, default='', max_length=100, verbose_name='Global Id')),
-                ('ou_id', models.PositiveBigIntegerField(blank=True, null=True, verbose_name='Organization Unit ID')),
-                ('add_id', models.PositiveBigIntegerField(blank=True, null=True, verbose_name='Address ID')),
-                ('client_name', models.CharField(blank=True, default='', max_length=255, null=True, verbose_name='Client Name')),
-                ('name', models.CharField(blank=True, default='', max_length=255, verbose_name='address')),
-                ('address', models.CharField(blank=True, default='', max_length=255, verbose_name='address')),
-                ('house_number', models.CharField(blank=True, default='', max_length=255, verbose_name='house number')),
-                ('house_number_extension', models.CharField(blank=True, default='', max_length=255, verbose_name='house number extension')),
-                ('city', models.CharField(blank=True, default='', max_length=255, verbose_name='city')),
-                ('post_code', models.CharField(blank=True, default='', max_length=100, verbose_name='zip / post code')),
-                ('country', django_countries.fields.CountryField(blank=True, default='', max_length=2, verbose_name='country')),
-                ('latitude', models.FloatField(blank=True, default=41.9172025, null=True, verbose_name='Latitude')),
-                ('longitude', models.FloatField(blank=True, default=22.4067487, null=True, verbose_name='Longitude')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "gl_id",
+                    models.CharField(
+                        blank=True, default="", max_length=100, verbose_name="Global Id"
+                    ),
+                ),
+                (
+                    "ou_id",
+                    models.PositiveBigIntegerField(
+                        blank=True, null=True, verbose_name="Organization Unit ID"
+                    ),
+                ),
+                (
+                    "add_id",
+                    models.PositiveBigIntegerField(
+                        blank=True, null=True, verbose_name="Address ID"
+                    ),
+                ),
+                (
+                    "client_name",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        null=True,
+                        verbose_name="Client Name",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True, default="", max_length=255, verbose_name="address"
+                    ),
+                ),
+                (
+                    "address",
+                    models.CharField(
+                        blank=True, default="", max_length=255, verbose_name="address"
+                    ),
+                ),
+                (
+                    "house_number",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="house number",
+                    ),
+                ),
+                (
+                    "house_number_extension",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=255,
+                        verbose_name="house number extension",
+                    ),
+                ),
+                (
+                    "city",
+                    models.CharField(
+                        blank=True, default="", max_length=255, verbose_name="city"
+                    ),
+                ),
+                (
+                    "post_code",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        max_length=100,
+                        verbose_name="zip / post code",
+                    ),
+                ),
+                (
+                    "country",
+                    django_countries.fields.CountryField(
+                        blank=True, default="", max_length=2, verbose_name="country"
+                    ),
+                ),
+                (
+                    "latitude",
+                    models.FloatField(
+                        blank=True,
+                        default=41.9172025,
+                        null=True,
+                        verbose_name="Latitude",
+                    ),
+                ),
+                (
+                    "longitude",
+                    models.FloatField(
+                        blank=True,
+                        default=22.4067487,
+                        null=True,
+                        verbose_name="Longitude",
+                    ),
+                ),
             ],
         ),
     ]

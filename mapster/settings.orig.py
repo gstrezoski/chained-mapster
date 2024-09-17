@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-f-4=unun=y4obpxzw2nvgulknp#$!45^xrczi6&8dl$!b^&gn0"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = (
     [os.environ["WEBSITE_HOSTNAME"]] if "WEBSITE_HOSTNAME" in os.environ else []
@@ -50,11 +50,8 @@ INSTALLED_APPS = [
     "orders",
 ]
 
-# WhiteNoise configuration
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # Add whitenoise middleware after the security middleware
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -86,15 +83,11 @@ TEMPLATES = [
 ASGI_APPLICATION = "mapster.asgi.application"
 
 STATIC_URL = "/static/"
-# STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', '..', 'public', 'static'))
+STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", "..", "public", "static"))
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 
@@ -111,34 +104,17 @@ CHANNEL_LAYERS = {
 
 ORDERS_CHANNELS_NAME = "orders"
 
-# Configure Postgres database based on connection string of the libpq Keyword/Value form
-# https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
-conn_str = os.environ["AZURE_POSTGRESQL_CONNECTIONSTRING"]
 
-conn_str_params = {
-    pair.split("=")[0]: pair.split("=")[1] for pair in conn_str.split(" ")
-}
+# Database
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": conn_str_params["dbname"],
-        "HOST": conn_str_params["host"],
-        "USER": conn_str_params["user"],
-        "PASSWORD": conn_str_params["password"],
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get("AZURE_REDIS_CONNECTIONSTRING"),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
-        },
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

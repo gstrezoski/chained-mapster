@@ -359,7 +359,7 @@ resource redisCache 'Microsoft.Cache/redis@2023-04-01' = {
     publicNetworkAccess:'Disabled'
     minimumTlsVersion: '1.2'
   }
-}    
+}
 
 output WEB_URI string = 'https://${web.properties.defaultHostName}'
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING

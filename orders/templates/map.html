@@ -8,12 +8,12 @@
         overflow: hidden;
     }
 
-    
-    #myplot { 
+
+    #myplot {
         margin: auto auto;
     }
 
-    #wrapper { 
+    #wrapper {
         width: 50vw;
         height: auto;
         margin: 0 auto;
@@ -68,7 +68,7 @@
         var svg = d3.select("svg"),
             width = +svg.attr("width"),
             height = +svg.attr("height");
-        
+
         // Map and projection
         var projection = d3.geoMercator().center([-100,60]).scale(200) // This is like the zoom if you want to use it.
 
@@ -79,7 +79,7 @@
         function ready(error, dataGeo, data) {
 
             var allContinent = d3.map(data, function(d){return(d.homecontinent)}).keys()
-            
+
             var color = d3.scaleOrdinal()
                 .domain(allContinent)
                 .range(d3.schemePaired);
@@ -158,5 +158,5 @@
             var svg = d3.select("svg");
         });
     </script>
-    
+
 {% endblock extrajs %}
