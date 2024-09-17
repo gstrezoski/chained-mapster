@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    body {
+        background-color: #232325;
+        overflow: hidden;
+    }
+
+    
+    #myplot { 
+        margin: auto auto;
+    }
+
+    #wrapper { 
+        width: 50vw;
+        height: auto;
+        margin: 0 auto;
+        position: relative;
+    }
+
+</style>
+    <!-- Create an element where the map will take place -->
+    <svg id="map" width="1500" height="600"></svg>
+
+{% endblock content %}
+
+{% block extrajs %}
+    {{ block.super }}
+    <!-- Load d3.js and the geo projection plugin -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+    {# Websockets #}
+    <script language="javascript">
+
+        var prefix = (window.location.protocol == 'https:') ? 'wss:/' : 'ws://';
+
+        var ws_url = prefix + window.location.host + '/ws/orders/';
+
+        var ordersSocket = new WebSocket(ws_url);
+
+        ordersSocket.onopen = function(event) {
+            console.log('ordersSocket.onopen()', event);
+        };
+
+        ordersSocket.onmessage = function(event) {
+            console.log('ordersSocket.onmessage()', event);
+            var data = JSON.parse(event.data);
+            logEntry(data, fake_data=false)
+        };
+
+        ordersSocket.onerror = function(e) {
+            console.log('ordersSocket.onerror()', event);
+        };
+
+        ordersSocket.onclose = function(e) {
+            console.log('ordersSocket.onclose()', event);
+        };
+    </script>
+    {# WebSockets End #}
+
+    <script>
+
+        // The svg
+        var svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+        
+        // Map and projection
+        var projection = d3.geoMercator().center([-100,60]).scale(200) // This is like the zoom if you want to use it.
+
+        // Get the geojson files for drawing a world map.
+        d3.queue().defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").await(ready);
+
+        // Draw a map with all the continents style it and append it to an SVG
+        function ready(error, dataGeo, data) {
+
+            var allContinent = d3.map(data, function(d){return(d.homecontinent)}).keys()
+            
+            var color = d3.scaleOrdinal()
+                .domain(allContinent)
+                .range(d3.schemePaired);
+
+            // Draw the map
+            svg.append("g")
+                .selectAll("path")
+                .data(dataGeo.features)
+                .enter()
+                .append("path")
+                    .attr("fill", "#b8b8b8")
+                    .attr("d", d3.geoPath()
+                        .projection(projection)
+                    )
+                .style("stroke", "none")
+                .style("opacity", .3)
+
+        }
+
+        // Get a signed random number.
+        function getRandom(max) {
+
+            let value = Math.random() * max
+
+            if (value<=(max/2))
+            {
+                return -Math.random() * max;
+            }
+            else
+            {
+                return Math.random() * max;
+            }
+        }
+
+        // Make a fake data demo
+        function fakeEvents(frequency) {
+
+            var event = {
+                        x: getRandom(180),
+                        y: getRandom(100)
+                    };
+            let coords = projection([event.x, event.y])
+            svg.append("circle")
+                .attr("cx", coords[0])
+                .attr("cy", coords[1])
+                .attr("r", 10)
+                .style("fill", "red")
+                .attr("stroke", "blue")
+                .attr("stroke-width", 1)
+                .attr("fill-opacity", .4)
+        }
+
+        // Log an order event happening.
+        function logEntry(entry, fake_data = false) {
+
+            var counter = 0;
+            let coords = projection([entry.lon, entry.lat])
+            console.log([entry.lon, entry.lat])
+            console.log(coords)
+
+            svg.append("circle")
+            .attr("cx", coords[0])  // Set the x-coordinate
+            .attr("cy", coords[1])  // Set the y-coordinate
+            .attr("r", 5)          // Set the radius
+            .style("fill", "red")   // Fill color red
+            .attr("stroke", "blue") // Stroke color blue
+            .attr("stroke-width", 1) // Stroke width 1
+            .attr("fill-opacity", 0.4)
+            .transition() // Start a transition
+            .duration(2000) // Set the duration to 5 seconds (5000 ms)
+            .style("opacity", 0) // Fade the circle out
+            .remove(); // Remove the element after the transition is complete; // 40% opacity for the fill
+        }
+        // Append the map, and draw some dots on the map.
+        $( document ).ready(function() {
+
+            var svg = d3.select("svg");
+
+
+        });
+    </script>
+    
+{% endblock extrajs %}

@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <title>Orders Mapper</title>
+    {% comment %}
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    {% endcomment %}
+  </head>
+  <body>
+        {% block content %}
+        {% endblock content %}
+
+        {% block js %}
+            <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+            <script src="{% static 'js/reconnecting-websocket.min.js' %}"></script>
+            <script src="{% static 'js/moment.min.js' %}"></script>
+            <script src="{% static 'js/Chart.min.js' %}"></script>
+            <script src="{% static 'js/hammer.min.js' %}"></script>
+            <script src="{% static 'js/chartjs-plugin-zoom.min.js' %}"></script>
+            <script src="{% static 'js/chartjs-plugin-streaming.min.js' %}"></script>
+        {% endblock js %}
+
+        {% block extrajs %}
+            {% comment %}
+            <script type="text/javascript" src="{% static 'js/my_project.js' %}"></script>
+            <script language="javascript">
+                $( document ).ready(function() {
+                });
+            </script>
+            {% endcomment %}
+        {% endblock extrajs %}
+
+  </body>
+</html>

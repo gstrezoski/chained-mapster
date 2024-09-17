@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <style>
+        body {
+            background-color: #efefef;
+            padding: 4%;
+        }
+
+        #wrapper {
+            max-width: 1100px;
+            display: inline-block;
+            margin-right: 30px;
+        }
+        #requests {
+            height: 1100px;
+            width: 400px;
+            overflow: scroll;
+        }
+        #log {
+            padding: 20px;
+            font-family: tahoma;
+            color: #666;
+        }
+
+        #chart1 {
+            background-color: white;
+            padding: 30px;
+
+            border: 1px solid #666;
+            border-radius: 10px;
+
+        }
+
+    </style>
+    <div id="request-bodies" style="display: inline-block;">
+        <div id="requests">
+
+        </div>
+    <!-- <textarea>
+
+    </textarea> -->
+    </div>
+    <div id="wrapper">
+        <canvas id="chart1" height="400" width="800"></canvas>
+        <div id="log">
+            Total Orders Processed: <span id="counter">0</span>
+            
+            last value: <span id="last_value"></span>
+        </div>
+
+        <div>
+            <span>
+                <h3>Rituals</h3>
+                <h3>$ <span id="rituals">0</span></h3>
+            </span>
+
+            <span>
+                <h3>Kiko</h3>
+                <h3>$ <span id="kiko">0</span></h3>
+            </span>
+
+            <span>
+                <h3>Dyson</h3>
+                <h3>$ <span id="dyson">0</span></h3>
+            </span>
+
+
+        </div>
+    </div>
+{% endblock content %}
+
+
+{% block extrajs %}
+    {{ block.super }}
+
+    {# Websockets #}
+    <script language="javascript">
+
+        var prefix = (window.location.protocol == 'https:') ? 'wss:/' : 'ws://';
+        var ws_url = prefix + window.location.host + '/ws/logins/';
+
+        var loginsSocket = new WebSocket(ws_url);
+
+        loginsSocket.onopen = function(event) {
+            console.log('loginsSocket.onopen()', event);
+        };
+
+        loginsSocket.onmessage = function(event) {
+            console.log('loginsSocket.onmessage()', event);
+            var data = JSON.parse(event.data);
+            console.log('data', data);
+            console.log(event.data);
+            onChartReceive(data);
+        };
+
+        loginsSocket.onerror = function(e) {
+            console.log('loginsSocket.onerror()', event);
+        };
+
+        loginsSocket.onclose = function(e) {
+            console.log('loginsSocket.onclose()', event);
+        };
+
+    </script>
+
+    {# Charting #}
+    <script language="javascript">
+
+        var chart1 = null;
+
+        function log(data, r, k, d, req_content) {
+            var counter = parseInt($('#counter').text());
+            var rituals = parseInt($('#rituals').text());
+            var kiko = parseInt($('#kiko').text());
+            var dyson = parseInt($('#dyson').text());
+            var internal = $("#requests").text();
+
+            $('#counter').text(counter + 1);
+                        $("#requests").append('<p style="color:green">Event Captured</p><p>' + event.data+'</p>');
+            $('#last_value').text(event.data);
+            
+            $('#rituals').text(rituals + r);
+            $('#kiko').text(kiko + k);
+            $('#dyson').text(dyson + d);
+        }
+
+        function build_chart(canvas, configuration) {
+            var ctx = $(canvas).get(0).getContext("2d");
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        data: [],
+                        fill: false,
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        pointRadius: 2
+                    }, {
+                        data: [],
+                        fill: false,
+                        borderColor: 'rgba(255,99,132,1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        pointRadius: 2
+                    }, {
+                        data: [],
+                        fill: false,
+                        borderColor: 'rgba(75, 192, 192,1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            type: 'realtime',       // x axis will auto-scroll from right to left
+                            realtime: {             // per-axis options
+                                duration: 60000,    // data in the past 20000 ms will be displayed
+                                delay: 1000,        // delay of 1000 ms, so upcoming values are known before plotting a line
+                                pause: false,       // chart is not paused
+                                ttl: 6000000        // data will be automatically deleted as it disappears off the chart
+                            }
+                        }]
+                    },
+                    plugins: {
+                        streaming: {             // per-chart option
+                            frameRate: 200       // chart is drawn 30 times every second
+                        }
+                    },
+
+                    // Assume x axis is the realtime scale
+                    pan: {
+                        enabled: true,    // Enable panning
+                        mode: 'x',        // Allow panning in the x direction
+                        rangeMin: {
+                            x: null       // Min value of the delay option
+                        },
+                        rangeMax: {
+                            x: null       // Max value of the delay option
+                        }
+                    },
+                    zoom: {
+                        enabled: true,    // Enable zooming
+                        mode: 'x',        // Allow zooming in the x direction
+                        rangeMin: {
+                            x: null       // Min value of the duration option
+                        },
+                        rangeMax: {
+                            x: null       // Max value of the duration option
+                        }
+                    }
+
+                }
+            });
+            return chart;
+        }
+
+        // your event listener code - assuming the event object has the timestamp and value properties
+        // See: https://github.com/nagix/chartjs-plugin-streaming#push-model-listening-based
+        function onChartReceive(event) {
+
+            var timestamp = new Date(event.timestamp * 1000).toISOString();
+            log(event, event["values"][0], event["values"][1], event["values"][2], event["values"][3], event["data"]);
+            console.log('timestamp: %o', timestamp);
+
+            // append the new data to the existing chart data
+            if (chart1) {
+                chart1.data.datasets.forEach(function(dataset, index) {
+                    dataset.data.push({
+                        x: timestamp,
+                        y: event.values[index]
+                    });
+                });
+
+                // update chart datasets keeping the current animation
+                chart1.update({
+                    preservation: true
+                });
+            }
+        };
+
+        $( document ).ready(function() {
+            chart1 = build_chart("#chart1");
+            var frequency = 0;
+
+            if (frequency) {
+                setInterval(function() {
+                    var event = {
+                        timestamp: new Date(),
+                        values: [Math.random(), Math.random()]
+                    };
+                    console.log('event: %o', event);
+                    onChartReceive(event);
+                }, frequency);
+            }
+        });
+    </script>
+
+{% endblock extrajs %}
