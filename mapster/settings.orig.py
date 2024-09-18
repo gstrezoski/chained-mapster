@@ -148,7 +148,13 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+REDIS_USER = os.environ.get("REDIS_USER", "redis://localhost:6379/0")
+REDIS_PORT = os.environ.get("REDIS_PORT", 6380)
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "a")
+REDIS_HOST = "rediss://{password}@{hostname}:{port}".format(
+    password=REDIS_PASSWORD, hostname=REDIS_URL, port=REDIS_PORT
+)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
