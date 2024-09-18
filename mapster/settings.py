@@ -100,18 +100,14 @@ REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 REDIS_USER = os.environ.get("REDIS_USER", "redis://localhost:6379/0")
 REDIS_PORT = os.environ.get("REDIS_PORT", 6380)
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "a")
-
+REDIS_HOST = "rediss://{password}@{hostname}:{port}".format(
+    password=REDIS_PASSWORD, hostname=REDIS_URL, port=REDIS_PORT
+)
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [
-                (
-                    "rediss://:{password}@{hostname}:{port}".format(
-                        password=REDIS_PASSWORD, hostname=REDIS_URL, port=REDIS_PORT
-                    )
-                )
-            ],
+            "hosts": [(REDIS_HOST)],
         },
     },
 }

@@ -10,9 +10,10 @@ from django.conf import settings
 
 from orders.models import OrganizationalUnit
 
-REDIS_CONNECTION_POOL = redis.ConnectionPool.from_url(
-    settings.REDIS_URL, decode_responses=True
-)
+##TODO: Clean up this cesspool of variables.
+
+REDIS_URL = settings.REDIS_HOST
+REDIS_CONNECTION_POOL = redis.ConnectionPool.from_url(REDIS_URL, decode_responses=True)
 
 EVA_ENDPOINT = "https://api.euw.newblack.test.eva-online.cloud/"
 AGENT = "insights"
@@ -46,7 +47,7 @@ DB_NAME = "EVA"
 FOLDER_PREFIX = "/production/organizationunits/2024/08/27/"
 CONTAINER = "eva-insights"
 
-REDIS_URL = "redis://localhost:6379/0"
+
 CHANNEL = "orders"
 
 
