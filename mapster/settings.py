@@ -118,6 +118,8 @@ CHANNEL_LAYERS = {
                     "socket_keepalive": True,
                 }
             ],
+            "capacity": 1500,
+            "expiry": 5,
         },
     },
 }
