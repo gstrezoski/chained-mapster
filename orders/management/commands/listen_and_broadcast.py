@@ -22,7 +22,7 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
-        parser.add_argument("-c", "--channel", default="logins")
+        parser.add_argument("-c", "--channel", default="orders")
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)

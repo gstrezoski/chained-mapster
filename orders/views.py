@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 METHODS = ["Completed Order", "Return"]
 
 SAS = "sv=2022-11-02&ss=b&srt=sco&sp=rl&se=2024-11-22T22:07:49Z&st=2023-11-22T14:07:49Z&spr=https&sig=o%2F8MVE7cL5GHN9QJEY4Lb%2F%2FvpbDu56VO1jlMY1JJcF8%3D"
+SAS_DEV = "sv=2022-11-02&ss=bfqt&srt=co&sp=rwdlacupiytfx&se=2024-09-19T16:52:58Z&st=2024-09-19T08:52:58Z&spr=https&sig=lAEoflZC2%2FnqKY4d5ncmCMdcPdjwCg6eiCpFKi5EZzI%3D"
 
 
 def homepage(request):
@@ -72,7 +73,7 @@ def ingest(request):
         requests.get(payload.get("data").get("validationUrl"), allow_redirects=True)
         return JsonResponse({"status": "ok"})
 
-    blob_location = json.loads(request.body)[0].get("data").get("url") + "?" + SAS
+    blob_location = json.loads(request.body)[0].get("data").get("url") + "?" + SAS_DEV
     file_response = requests.get(blob_location, allow_redirects=True)
 
     try:
@@ -81,7 +82,7 @@ def ingest(request):
         stored_unit = OrganizationalUnit.objects.filter(gl_id=organization_unit_id)[0]
         publish_order(stored_unit)
 
-    except:
+    except Exception as exx:
         return JsonResponse({"status": "niet ok"})
 
     return JsonResponse({"status": "ok"})

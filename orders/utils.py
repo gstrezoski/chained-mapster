@@ -26,25 +26,25 @@ HEADERS = {
 }
 
 LIST_OUS_ENDPOINTS = [
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/ase-prod-rituals.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/cus-prod-guc-newblack.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-ajax.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-dyson.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-fenix.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-grandvision-pt.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-gstar.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-kiko.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-rituals.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/euw-prod-scotch-2021.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/gwc-prod-ide.json",
-    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/08/27/gwc-prod-intersport.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/ase-prod-rituals.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/cus-prod-guc-newblack.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/euw-prod-ajax.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/euw-prod-dyson.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/euw-prod-fenix.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/euw-prod-grandvision-pt.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/euw-prod-gstar.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/euw-prod-kiko.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/euw-prod-rituals.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/euw-prod-scotch-2021.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/gwc-prod-ide.json",
+    "https://nbinsights.dfs.core.windows.net/eva-insights/production/organizationunits/2024/09/10/gwc-prod-intersport.json",
 ]
 
 SAS_TOKEN = "sv=2022-11-02&ss=b&srt=sco&sp=rl&se=2024-11-22T22:07:49Z&st=2023-11-22T14:07:49Z&spr=https&sig=o%2F8MVE7cL5GHN9QJEY4Lb%2F%2FvpbDu56VO1jlMY1JJcF8%3D"
 
 ACCOUNT_URL = "https://nbinsights.blob.core.windows.net/"
 DB_NAME = "EVA"
-FOLDER_PREFIX = "/production/organizationunits/2024/08/27/"
+FOLDER_PREFIX = "/production/organizationunits/2024/09/10/"
 CONTAINER = "eva-insights"
 
 

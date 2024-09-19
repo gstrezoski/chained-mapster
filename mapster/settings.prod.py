@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,9 +30,7 @@ SECRET_KEY = "django-insecure-f-4=unun=y4obpxzw2nvgulknp#$!45^xrczi6&8dl$!b^&gn0
 DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = (
-    [os.environ["WEBSITE_HOSTNAME"]]
-    if "WEBSITE_HOSTNAME" in os.environ
-    else ["127.0.0.1"]
+    [os.environ["WEBSITE_HOSTNAME"]] if "WEBSITE_HOSTNAME" in os.environ else []
 )
 CSRF_TRUSTED_ORIGINS = (
     ["https://" + os.environ["WEBSITE_HOSTNAME"]]
@@ -52,8 +53,11 @@ INSTALLED_APPS = [
     "orders",
 ]
 
+# WhiteNoise configuration
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Add whitenoise middleware after the security middleware
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -85,38 +89,71 @@ TEMPLATES = [
 ASGI_APPLICATION = "mapster.asgi.application"
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", "..", "public", "static"))
+# STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', '..', 'public', 'static'))
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+REDIS_USER = os.environ.get("REDIS_USER", "redis://localhost:6379/0")
+REDIS_PORT = os.environ.get("REDIS_PORT", 6380)
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "a")
+REDIS_HOST = "rediss://:{password}@{hostname}:{port}".format(
+    password=REDIS_PASSWORD, hostname=REDIS_URL, port=REDIS_PORT
+)
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [
-                REDIS_URL,
+                {
+                    "address": REDIS_HOST,
+                    "retry_on_timeout": True,
+                    "health_check_interval": 1,
+                    "socket_keepalive": True,
+                }
             ],
+            "capacity": 1500,
+            "expiry": 5,
         },
     },
 }
 
 ORDERS_CHANNELS_NAME = "orders"
 
+# Configure Postgres database based on connection string of the libpq Keyword/Value form
+# https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
+conn_str = os.environ.get("AZURE_POSTGRESQL_CONNECTIONSTRING")
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+conn_str_params = {
+    pair.split("=")[0]: pair.split("=")[1] for pair in conn_str.split(" ")
+}
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": conn_str_params["dbname"],
+        "HOST": conn_str_params["host"],
+        "USER": conn_str_params["user"],
+        "PASSWORD": conn_str_params["password"],
     }
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get("AZURE_REDIS_CONNECTIONSTRING"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -148,13 +185,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-REDIS_USER = os.environ.get("REDIS_USER", "redis://localhost:6379/0")
-REDIS_PORT = os.environ.get("REDIS_PORT", 6380)
-REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "a")
-REDIS_HOST = "rediss://{password}@{hostname}:{port}".format(
-    password=REDIS_PASSWORD, hostname=REDIS_URL, port=REDIS_PORT
-)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
@@ -164,6 +195,7 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 LOGGING = {
     "version": 1,
@@ -179,7 +211,7 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": os.environ.get("LOG_FILE", "./logs/debug.log"),
             "formatter": "verbose",
-            "backupCount": 1,
+            "backupCount": 5,
             "maxBytes": 1024**3,  # 1GB
         }
     },
