@@ -69,8 +69,9 @@ def ingest(request):
 
     if "validationCode" in payload.get("data"):
 
-        print(payload.get("data").get("validationUrl"))
+        log.debug(payload.get("data").get("validationUrl"))
         requests.get(payload.get("data").get("validationUrl"), allow_redirects=True)
+
         return JsonResponse({"status": "ok"})
 
     blob_location = json.loads(request.body)[0].get("data").get("url") + "?" + SAS_DEV
@@ -79,7 +80,9 @@ def ingest(request):
     try:
         payload = file_response.json()
         organization_unit_id = payload["OriginatingOrganizationUnit"].get("ID")
+
         stored_unit = OrganizationalUnit.objects.filter(gl_id=organization_unit_id)[0]
+
         publish_order(stored_unit)
 
     except Exception as exx:
